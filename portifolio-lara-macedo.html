@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lara Macedo - UI/UX Designer</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+    --primary-color: #8B5CF6;
+    --primary-dark: #7C3AED;
+    --text-dark: #1F2937;
+    --text-light: #6B7280;
+    --bg-light: #F9FAFB;
+    --bg-white: #FFFFFF;
+    --border-color: #E5E7EB;
+    --sidebar-bg: #F9FAFB;
+    --card-bg: #FFFFFF;
+    --card-bg-alt: #F9FAFB;
+}
+
+html.dark-mode {
+    --text-dark: #F3F4F6;
+    --text-light: #9CA3AF;
+    --bg-white: #111827;
+    --bg-light: #1F2937;
+    --border-color: #374151;
+    --sidebar-bg: #1F2937;
+    --card-bg: #1F2937;
+    --card-bg-alt: #111827;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    color: var(--text-dark);
+    background-color: var(--bg-white);
+    line-height: 1.6;
+    margin-left: 80px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+    position: fixed;
+    left: 0; top: 0;
+    width: 80px;
+    height: 100vh;
+    background-color: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+    z-index: 1000;
+    transition: width 0.3s ease, background-color 0.3s ease;
+    overflow: hidden;
+}
+
+.sidebar:hover { width: 220px; }
+
+.sidebar-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 0;
+    height: 100%;
+}
+
+/* quando expandida, alinhar ao início */
+.sidebar:hover .sidebar-container { align-items: flex-start; padding-left: 1rem; }
+
+/* face icon no topo */
+.sidebar-face-icon {
+    width: 50px; height: 50px;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+.sidebar-face-icon:hover { transform: scale(1.08); }
+.sidebar-face-icon .material-symbols-outlined { font-size: 26px; color: white; }
+
+/* nav centraliza o flex de ícones */
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+    flex: 1;
+    align-items: center;
+}
+
+.sidebar:hover .sidebar-nav { align-items: flex-start; }
+
+.nav-item {
+    /* largura fixa de 50px quando colapsado, cresce quando expandido */
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    color: var(--text-light);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+/* expandido: cresce para largura total com padding lateral */
+.sidebar:hover .nav-item {
+    width: calc(220px - 2rem);
+    justify-content: flex-start;
+    padding: 0 12px;
+    gap: 0.75rem;
+}
+
+.nav-item:hover {
+    color: var(--primary-color);
+    background-color: rgba(139, 92, 246, 0.1);
+}
+.nav-item.active {
+    color: var(--primary-color);
+    background-color: rgba(139, 92, 246, 0.15);
+}
+
+.nav-item svg { width: 22px; height: 22px; flex-shrink: 0; }
+
+.nav-label {
+    opacity: 0;
+    max-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    transition: opacity 0.25s ease, max-width 0.25s ease;
+    font-size: 0.95rem;
+}
+.sidebar:hover .nav-label { opacity: 1; max-width: 160px; }
+
+/* theme toggle */
+.theme-toggle {
+    width: 50px; height: 50px;
+    border: none;
+    background-color: rgba(139, 92, 246, 0.1);
+    border-radius: 12px;
+    color: var(--text-light);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+    position: relative;
+    flex-shrink: 0;
+}
+.theme-toggle:hover { background-color: rgba(139, 92, 246, 0.2); color: var(--primary-color); }
+.theme-toggle svg { width: 22px; height: 22px; }
+.theme-icon { position: absolute; transition: opacity 0.3s ease; }
+.theme-icon-sun { opacity: 1; }
+.theme-icon-moon { opacity: 0; }
+html.dark-mode .theme-icon-sun { opacity: 0; }
+html.dark-mode .theme-icon-moon { opacity: 1; }
+
+/* ── HERO ── */
+.hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    /* degradê suave com as cores do projeto */
+    background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(139,92,246,0.10) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(124,58,237,0.08) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 40% at 60% 20%, rgba(236,72,153,0.05) 0%, transparent 50%),
+        var(--bg-white);
+}
+
+/* orb decorativo animado */
+.hero-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    pointer-events: none;
+    animation: orbFloat 8s ease-in-out infinite;
+}
+.hero-orb-1 {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 70%);
+    top: -80px; left: -80px;
+    animation-delay: 0s;
+}
+.hero-orb-2 {
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(236,72,153,0.08) 0%, transparent 70%);
+    bottom: -60px; right: 10%;
+    animation-delay: -3s;
+}
+.hero-orb-3 {
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(124,58,237,0.07) 0%, transparent 70%);
+    top: 40%; left: 60%;
+    animation-delay: -5s;
+}
+
+@keyframes orbFloat {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33%       { transform: translate(15px, -20px) scale(1.05); }
+    66%       { transform: translate(-10px, 10px) scale(0.97); }
+}
+
+/* hero content — animação de entrada */
+.hero-content {
+    text-align: center;
+    max-width: 800px;
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.9s cubic-bezier(0.22,1,0.36,1), transform 0.9s cubic-bezier(0.22,1,0.36,1);
+}
+.hero-content.visible { opacity: 1; transform: translateY(0); }
+
+/* filhos com delay escalonado */
+.hero-content h1      { transition-delay: 0.05s; }
+.hero-subtitle        { transition-delay: 0.12s; }
+.badges-container     { transition-delay: 0.20s; }
+.hero-buttons         { transition-delay: 0.28s; }
+.scroll-indicator     { transition-delay: 0.36s; }
+
+.hero-content h1 {
+    font-size: 4rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    line-height: 1.1;
+    color: var(--text-dark);
+}
+.hero-content h1 .highlight { color: var(--primary-color); }
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    color: var(--text-light);
+    margin-bottom: 2rem;
+    line-height: 1.8;
+}
+
+.badges-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 2.5rem;
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    color: var(--text-light);
+    background-color: var(--card-bg);
+    backdrop-filter: blur(4px);
+}
+
+.hero-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+}
+.btn-primary { background-color: var(--primary-color); color: white; }
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(139,92,246,0.3);
+}
+.btn-secondary {
+    background-color: var(--card-bg);
+    color: var(--text-dark);
+    border: 1px solid var(--border-color);
+}
+.btn-secondary:hover { border-color: var(--primary-color); color: var(--primary-color); }
+.btn-large { padding: 1rem 3rem; font-size: 1.1rem; }
+
+.scroll-indicator {
+    font-size: 2rem;
+    animation: bounce 2s infinite;
+    margin-top: 2rem;
+    color: var(--text-light);
+}
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(10px); }
+}
+
+/* ── HERO TIMELINE DOTS ── */
+.hero-timeline-nav {
+    position: fixed;        /* fixed para acompanhar o scroll */
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    z-index: 900;
+}
+
+.hero-timeline-line {
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    background: linear-gradient(to bottom, var(--primary-color), var(--border-color));
+    z-index: 0;
+}
+
+.hero-dot-wrap {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 0;
+}
+
+.hero-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background-color: var(--border-color);
+    border: 2px solid var(--bg-white);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: block;
+}
+.hero-dot.active {
+    background-color: var(--primary-color);
+    width: 16px; height: 16px;
+    box-shadow: 0 0 0 3px rgba(139,92,246,0.2);
+}
+.hero-dot:hover { background-color: var(--primary-color); transform: scale(1.2); }
+
+.dot-tooltip {
+    position: absolute;
+    right: 24px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 0.72rem;
+    color: var(--text-light);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+.hero-dot-wrap:hover .dot-tooltip { opacity: 1; }
+
+/* ── SOBRE ── */
+.about { padding: 5rem 2rem; background-color: var(--bg-white); }
+.about-container {
+    max-width: 1200px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start;
+}
+.about-text { display: flex; flex-direction: column; }
+
+.section-label {
+    font-size: 0.75rem; text-transform: uppercase;
+    letter-spacing: 2px; color: var(--primary-color);
+    margin-bottom: 0.5rem; font-weight: 600;
+}
+
+.about-text h3 { font-size: 2.5rem; margin-bottom: 1.5rem; line-height: 1.2; color: var(--text-dark); }
+.about-text h3 .highlight { color: var(--primary-color); }
+.about-text p { color: var(--text-light); margin-bottom: 1.5rem; line-height: 1.8; font-size: 0.95rem; }
+.about-divider { border: none; border-top: 1px solid var(--border-color); margin: 2rem 0; }
+
+.stats-row { display: flex; gap: 2.5rem; margin-top: 0.5rem; }
+.stat h5 { font-size: 2rem; color: var(--primary-color); font-weight: 700; }
+.stat p  { color: var(--text-light); font-size: 0.85rem; margin-bottom: 0; }
+
+.skills-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+
+.skill-card {
+    padding: 1.25rem 1.5rem; background-color: var(--card-bg);
+    border: 1px solid var(--border-color); border-radius: 12px;
+    display: flex; align-items: flex-start; gap: 1rem; transition: all 0.3s ease;
+}
+.skill-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); border-color: rgba(139,92,246,0.3); }
+
+.skill-icon-wrap {
+    width: 40px; height: 40px; background: rgba(139,92,246,0.1);
+    border-radius: 10px; display: flex; align-items: center;
+    justify-content: center; color: var(--primary-color); flex-shrink: 0;
+}
+.skill-icon-wrap svg { width: 20px; height: 20px; }
+.skill-card-text h4 { font-size: 1rem; margin-bottom: 0.25rem; color: var(--text-dark); font-weight: 600; }
+.skill-card-text p  { font-size: 0.82rem; color: var(--text-light); line-height: 1.5; margin: 0; }
+
+/* ── PROCESSO ── */
+.process { padding: 5rem 2rem; background-color: var(--bg-light); }
+.process-container { max-width: 1200px; margin: 0 auto; }
+.process-container > h3 { font-size: 2.5rem; margin-bottom: 0.75rem; line-height: 1.2; color: var(--text-dark); }
+.process-container > h3 .highlight { color: var(--primary-color); }
+.section-subtitle { color: var(--text-light); margin-bottom: 3rem; max-width: 700px; line-height: 1.8; }
+
+.process-group { margin-bottom: 3rem; }
+.process-group-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.4rem; }
+.process-group-icon {
+    width: 36px; height: 36px; background: rgba(139,92,246,0.12);
+    border-radius: 10px; display: flex; align-items: center;
+    justify-content: center; color: var(--primary-color);
+}
+.process-group-icon.pink { background: rgba(236,72,153,0.12); color: #EC4899; }
+.process-group-icon svg { width: 18px; height: 18px; }
+.process-group-header h4 { font-size: 1.3rem; font-weight: 600; color: var(--text-dark); }
+.process-group-sub { font-size: 0.9rem; color: var(--text-light); margin-bottom: 1.5rem; }
+
+.process-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.process-card {
+    background-color: var(--card-bg); border: 1px solid var(--border-color);
+    border-radius: 12px; padding: 1.5rem; display: flex; gap: 1rem;
+    align-items: flex-start; transition: all 0.3s ease;
+}
+.process-card:hover { border-color: rgba(139,92,246,0.3); box-shadow: 0 6px 20px rgba(0,0,0,0.07); }
+.process-card-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.process-card-icon.purple { background: rgba(139,92,246,0.12); color: var(--primary-color); }
+.process-card-icon.pink   { background: rgba(236,72,153,0.12); color: #EC4899; }
+.process-card-icon svg { width: 18px; height: 18px; }
+.process-card h5 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--text-dark); }
+.process-card p  { font-size: 0.82rem; color: var(--text-light); line-height: 1.6; margin: 0; }
+
+/* ── TRAJETÓRIA ── */
+.journey { padding: 5rem 2rem; background-color: var(--bg-white); }
+.journey-container { max-width: 1200px; margin: 0 auto; }
+.journey-container > h3 { font-size: 2.5rem; margin-bottom: 0.75rem; color: var(--text-dark); }
+.journey-container > h3 .highlight { color: var(--primary-color); }
+
+.journey-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 2rem; }
+
+.journey-section-title {
+    font-size: 1.1rem; font-weight: 600; color: var(--text-dark);
+    margin-bottom: 1.5rem; padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--border-color);
+    display: flex; align-items: center; gap: 0.5rem; margin-top: 2rem;
+}
+.journey-section-title svg { width: 18px; height: 18px; color: var(--primary-color); }
+
+.company-group { margin-bottom: 2rem; }
+.company-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+.company-badge-new {
+    width: 42px; height: 42px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold; color: white; font-size: 1rem; flex-shrink: 0;
+}
+.badge-purple { background: linear-gradient(135deg,#8B5CF6,#7C3AED); }
+.badge-gray   { background: linear-gradient(135deg,#6B7280,#4B5563); }
+.badge-orange { background: linear-gradient(135deg,#F97316,#EA580C); }
+.badge-violet { background: linear-gradient(135deg,#7C3AED,#6D28D9); }
+.company-name { font-size: 1rem; font-weight: 600; color: var(--text-dark); }
+
+.role-item { display: flex; gap: 0.75rem; padding-left: 1.25rem; position: relative; margin-bottom: 1rem; }
+.role-item::before {
+    content: ''; width: 8px; height: 8px; background: var(--primary-color);
+    border-radius: 50%; position: absolute; left: 0; top: 6px; flex-shrink: 0;
+}
+.role-content { flex: 1; }
+.role-title { font-size: 0.9rem; font-weight: 600; color: var(--text-dark); margin-bottom: 0.1rem; }
+.role-meta   { font-size: 0.78rem; color: var(--text-light); margin-bottom: 0.5rem; line-height: 1.5; }
+.role-desc   { font-size: 0.82rem; color: var(--text-light); line-height: 1.6; margin-bottom: 0.4rem; }
+.role-skills { font-size: 0.78rem; color: var(--primary-color); }
+
+.event-card {
+    background: var(--card-bg); border: 1px solid var(--border-color);
+    border-radius: 12px; padding: 1rem 1.25rem;
+    display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1rem;
+}
+.event-badge-new {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: linear-gradient(135deg,#EC4899,#DB2777);
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: bold; font-size: 0.9rem; flex-shrink: 0;
+}
+.event-card h5   { font-size: 0.9rem; font-weight: 600; color: var(--text-dark); margin-bottom: 0.2rem; }
+.event-card .year{ font-size: 0.78rem; color: var(--primary-color); font-weight: 600; margin-bottom: 0.25rem; display: block; }
+.event-card p    { font-size: 0.8rem; color: var(--text-light); line-height: 1.5; margin: 0; }
+
+.edu-card {
+    background: var(--card-bg); border: 1px solid var(--border-color);
+    border-radius: 12px; padding: 1rem 1.25rem;
+    display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;
+}
+.edu-badge {
+    width: 44px; height: 44px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold; color: white; font-size: 0.75rem; flex-shrink: 0;
+}
+.edu-badge.blue { background: linear-gradient(135deg,#3B82F6,#1D4ED8); }
+.edu-badge.teal { background: linear-gradient(135deg,#06B6D4,#0891B2); }
+.edu-card h5 { font-size: 0.9rem; font-weight: 600; color: var(--text-dark); margin-bottom: 0.15rem; }
+.edu-card p  { font-size: 0.8rem; color: var(--text-light); margin: 0; }
+
+.cert-card {
+    background: var(--card-bg); border: 1px solid var(--border-color);
+    border-radius: 12px; padding: 1rem 1.25rem;
+    display: flex; gap: 1rem; align-items: flex-start;
+    margin-bottom: 0.75rem; transition: all 0.3s ease;
+}
+.cert-card:hover { border-color: rgba(139,92,246,0.3); box-shadow: 0 4px 15px rgba(0,0,0,0.06); }
+.cert-badge-new {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold; color: white; font-size: 0.9rem; flex-shrink: 0;
+}
+.cert-badge-new.indigo  { background: linear-gradient(135deg,#6366F1,#4F46E5); }
+.cert-badge-new.cyan    { background: linear-gradient(135deg,#06B6D4,#0891B2); }
+.cert-badge-new.emerald { background: linear-gradient(135deg,#10B981,#059669); }
+.cert-badge-new.amber   { background: linear-gradient(135deg,#F59E0B,#D97706); }
+.cert-badge-new.violet  { background: linear-gradient(135deg,#8B5CF6,#7C3AED); }
+.cert-card h5        { font-size: 0.88rem; font-weight: 600; color: var(--text-dark); margin-bottom: 0.15rem; line-height: 1.4; }
+.cert-card .issuer   { font-size: 0.78rem; color: var(--text-light); display: block; margin-bottom: 0.1rem; }
+.cert-card .period   { font-size: 0.75rem; color: var(--text-light); display: block; margin-bottom: 0.2rem; }
+.cert-card .cert-skills { font-size: 0.75rem; color: var(--primary-color); }
+
+/* ── PROJETOS ── */
+.projects { padding: 5rem 2rem; background-color: var(--bg-light); }
+.projects-container { max-width: 1200px; margin: 0 auto; }
+.projects-container > h3 { font-size: 2.5rem; margin-bottom: 0.75rem; color: var(--text-dark); }
+.projects-container > h3 .highlight { color: var(--primary-color); }
+
+.case-studies { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-top: 2rem; }
+.case-study {
+    background-color: var(--card-bg); padding: 2rem;
+    border-radius: 12px; border: 1px solid var(--border-color); transition: all 0.3s ease;
+}
+.case-study:hover { transform: translateY(-4px); box-shadow: 0 15px 40px rgba(0,0,0,0.08); border-color: rgba(139,92,246,0.25); }
+
+.case-tag {
+    display: inline-block; font-size: 0.7rem; text-transform: uppercase;
+    letter-spacing: 1px; color: white; font-weight: 600;
+    background: var(--primary-color); padding: 0.25rem 0.75rem;
+    border-radius: 20px; margin-bottom: 0.75rem;
+}
+.case-tag.edtech { background: #10B981; }
+.case-study h4    { font-size: 1.25rem; color: var(--text-dark); margin-bottom: 0.5rem; font-weight: 600; }
+.case-description { color: var(--text-light); font-size: 0.92rem; margin-bottom: 1.25rem; line-height: 1.8; }
+.case-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.tag {
+    display: inline-block; padding: 0.35rem 0.9rem;
+    background-color: var(--card-bg-alt); border: 1px solid var(--border-color);
+    border-radius: 15px; font-size: 0.78rem; color: var(--text-light);
+}
+
+.role-badge {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    font-size: 0.75rem; color: var(--primary-color);
+    background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.2);
+    border-radius: 20px; padding: 0.2rem 0.65rem; margin-bottom: 0.6rem; font-weight: 500;
+}
+.role-badge svg { width: 12px; height: 12px; }
+
+/* ── CONTATO ── */
+.contact {
+    padding: 5rem 2rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: white; text-align: center;
+}
+.contact-container { max-width: 600px; margin: 0 auto; }
+.contact h2 { font-size: 2.5rem; margin-bottom: 1rem; line-height: 1.2; }
+.contact p  { font-size: 1.1rem; margin-bottom: 2rem; opacity: 0.9; }
+.contact .btn-primary { background: white; color: var(--primary-color); }
+.contact .btn-primary:hover { background: #F3F4F6; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+
+/* ── FOOTER ── */
+.footer { background-color: var(--text-dark); color: #9CA3AF; padding: 2rem; text-align: center; font-size: 0.88rem; }
+.footer-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+}
+.footer-links { display: flex; align-items: center; gap: 0.75rem; }
+.footer-links a { color: var(--primary-color); text-decoration: none; transition: opacity 0.3s; }
+.footer-links a:hover { opacity: 0.8; }
+.status-dot { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.82rem; }
+.status-dot::before { content: ''; width: 8px; height: 8px; background: #10B981; border-radius: 50%; display: inline-block; }
+
+/* ── RESPONSIVO ── */
+@media (max-width: 900px) {
+    .about-container, .journey-grid, .process-cards { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+    .hero-content h1 { font-size: 2.5rem; }
+    .stats-row { gap: 1.5rem; }
+    .hero-timeline-nav { right: 0.75rem; }
+}
+@media (max-width: 640px) {
+    body { margin-left: 0; padding-bottom: 80px; }
+    .sidebar {
+        width: 100%; height: 70px;
+        bottom: 0; top: auto;
+        border-right: none; border-top: 1px solid var(--border-color);
+    }
+    .sidebar-container {
+        flex-direction: row; padding: 0 1rem;
+        justify-content: space-around; align-items: center; height: 70px;
+    }
+    .sidebar:hover .sidebar-container { align-items: center; padding-left: 1rem; }
+    .sidebar-face-icon { margin-bottom: 0; width: 40px; height: 40px; }
+    .sidebar-nav { flex-direction: row; gap: 0.5rem; }
+    .sidebar:hover .sidebar-nav { align-items: center; }
+    .nav-label { display: none; }
+    .theme-toggle { margin: 0; }
+    .hero-content h1 { font-size: 2rem; }
+    .hero-subtitle { font-size: 1rem; }
+    .process-cards { grid-template-columns: 1fr; }
+    .hero-timeline-nav { display: none; }
+}
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+    <div class="sidebar-container">
+        <div class="sidebar-face-icon">
+            <span class="material-symbols-outlined">face_3</span>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="#home"     class="nav-item" data-section="home"     title="Início">
+                <i data-lucide="home"></i><span class="nav-label">Início</span>
+            </a>
+            <a href="#about"    class="nav-item" data-section="about"    title="Sobre">
+                <i data-lucide="user"></i><span class="nav-label">Sobre</span>
+            </a>
+            <a href="#process"  class="nav-item" data-section="process"  title="Processo">
+                <i data-lucide="clipboard-check"></i><span class="nav-label">Processo</span>
+            </a>
+            <a href="#journey"  class="nav-item" data-section="journey"  title="Trajetória">
+                <i data-lucide="clock"></i><span class="nav-label">Trajetória</span>
+            </a>
+            <a href="#projects" class="nav-item" data-section="projects" title="Projetos">
+                <i data-lucide="briefcase"></i><span class="nav-label">Projetos</span>
+            </a>
+            <a href="#contact"  class="nav-item" data-section="contact"  title="Contato">
+                <i data-lucide="mail"></i><span class="nav-label">Contato</span>
+            </a>
+        </nav>
+
+        <button class="theme-toggle" id="themeToggle" title="Alternar tema">
+            <i data-lucide="sun"  class="theme-icon theme-icon-sun"></i>
+            <i data-lucide="moon" class="theme-icon theme-icon-moon"></i>
+        </button>
+    </div>
+</aside>
+
+<!-- Hero -->
+<section id="home" class="hero">
+    <!-- orbs de fundo -->
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+    <div class="hero-orb hero-orb-3"></div>
+
+    <div class="hero-content" id="heroContent">
+        <h1>Olá, sou <span class="highlight">Lara Macedo</span></h1>
+        <p class="hero-subtitle">UI/UX Designer — crio interfaces que transformam complexidade em clareza, unindo pesquisa, estratégia e design visual.</p>
+        <div class="badges-container">
+            <span class="badge">UX Research</span>
+            <span class="badge">UI Design</span>
+            <span class="badge">Figma</span>
+            <span class="badge">Design Systems</span>
+            <span class="badge">Acessibilidade WCAG</span>
+            <span class="badge">Healthtech</span>
+        </div>
+        <div class="hero-buttons">
+            <a href="#projects" class="btn btn-primary">Ver meus projetos</a>
+            <a href="https://www.linkedin.com/in/lara-macedo-634433202" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">LinkedIn</a>
+        </div>
+        <div class="scroll-indicator">↓</div>
+    </div>
+
+    <!-- Timeline dots — fixed, acompanham o scroll -->
+    <nav class="hero-timeline-nav" aria-label="Navegação por seções">
+        <div class="hero-timeline-line"></div>
+        <div class="hero-dot-wrap">
+            <a href="#home"     class="hero-dot" data-section="home"></a>
+            <span class="dot-tooltip">Início</span>
+        </div>
+        <div class="hero-dot-wrap">
+            <a href="#about"    class="hero-dot" data-section="about"></a>
+            <span class="dot-tooltip">Sobre</span>
+        </div>
+        <div class="hero-dot-wrap">
+            <a href="#process"  class="hero-dot" data-section="process"></a>
+            <span class="dot-tooltip">Processo</span>
+        </div>
+        <div class="hero-dot-wrap">
+            <a href="#journey"  class="hero-dot" data-section="journey"></a>
+            <span class="dot-tooltip">Trajetória</span>
+        </div>
+        <div class="hero-dot-wrap">
+            <a href="#projects" class="hero-dot" data-section="projects"></a>
+            <span class="dot-tooltip">Projetos</span>
+        </div>
+        <div class="hero-dot-wrap">
+            <a href="#contact"  class="hero-dot" data-section="contact"></a>
+            <span class="dot-tooltip">Contato</span>
+        </div>
+    </nav>
+</section>
+
+<!-- Sobre -->
+<section id="about" class="about">
+    <div class="about-container">
+        <div class="about-text">
+            <span class="section-label">SOBRE MIM</span>
+            <h3>Design que conecta <span class="highlight">pessoas</span> a soluções</h3>
+            <p>Sou <strong>Lara Macedo</strong>, UI/UX Designer com foco em criar interfaces responsivas, fluxos otimizados e componentes reutilizáveis que reduzem retrabalho e aceleram entregas.</p>
+            <p>Busco constantemente alinhar User Experience às métricas de negócio, entregando interfaces que aumentam engajamento, conversão e retenção. Tenho experiência em todas as etapas do processo de design: da descoberta e definição de problemas até a construção de design systems.</p>
+            <p>Colaboro com equipes de produto, desenvolvedores e stakeholders para transformar necessidades reais em experiências digitais acessíveis e escaláveis.</p>
+            <hr class="about-divider">
+            <div class="stats-row">
+                <div class="stat"><h5>3+</h5><p>Anos de experiência</p></div>
+                <div class="stat"><h5>10+</h5><p>Projetos entregues</p></div>
+                <div class="stat"><h5>50+</h5><p>Competências</p></div>
+            </div>
+        </div>
+        <div class="skills-grid">
+            <div class="skill-card">
+                <div class="skill-icon-wrap"><i data-lucide="search"></i></div>
+                <div class="skill-card-text"><h4>UX Research</h4><p>Descoberta e definição de problemas, testes de usabilidade e entrevistas com usuários reais.</p></div>
+            </div>
+            <div class="skill-card">
+                <div class="skill-icon-wrap"><i data-lucide="smartphone"></i></div>
+                <div class="skill-card-text"><h4>UI Design</h4><p>Interfaces responsivas e de alta fidelidade com foco em hierarquia visual e clareza.</p></div>
+            </div>
+            <div class="skill-card">
+                <div class="skill-icon-wrap"><i data-lucide="figma"></i></div>
+                <div class="skill-card-text"><h4>Figma</h4><p>Design Systems, AutoLayout, componentes reutilizáveis e prototipagem interativa.</p></div>
+            </div>
+            <div class="skill-card">
+                <div class="skill-icon-wrap"><i data-lucide="layers"></i></div>
+                <div class="skill-card-text"><h4>Design Systems</h4><p>Bibliotecas escaláveis que conectam design e desenvolvimento com consistência.</p></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Processo -->
+<section id="process" class="process">
+    <div class="process-container">
+        <span class="section-label">MEU PROCESSO</span>
+        <h3>Meu <span class="highlight">Processo</span> Criativo</h3>
+        <p class="section-subtitle">Da pesquisa ao pixel final — cada etapa é pensada para entregar interfaces que funcionam, encantam e escalam.</p>
+        <div class="process-group">
+            <div class="process-group-header">
+                <div class="process-group-icon"><i data-lucide="search"></i></div>
+                <h4>UX — Da Pesquisa ao Protótipo</h4>
+            </div>
+            <p class="process-group-sub">Entendendo o problema antes de desenhar a solução</p>
+            <div class="process-cards">
+                <div class="process-card"><div class="process-card-icon purple"><i data-lucide="search"></i></div><div><h5>Pesquisa e Descoberta</h5><p>Entrevistas com usuários, análise de concorrentes e imersão no domínio do problema para entender dores reais antes de qualquer esboço.</p></div></div>
+                <div class="process-card"><div class="process-card-icon purple"><i data-lucide="lightbulb"></i></div><div><h5>Definição do Problema</h5><p>Síntese dos achados em personas, jornadas do usuário e mapas de empatia que guiam todas as decisões de design.</p></div></div>
+                <div class="process-card"><div class="process-card-icon purple"><i data-lucide="git-branch"></i></div><div><h5>Ideação e Fluxos</h5><p>Brainstorm colaborativo com stakeholders, criação de fluxos de navegação e arquitetura da informação validada.</p></div></div>
+                <div class="process-card"><div class="process-card-icon purple"><i data-lucide="monitor-smartphone"></i></div><div><h5>Prototipagem e Testes</h5><p>Wireframes clicáveis testados com usuários reais, iteração baseada em feedback, métricas de usabilidade e heurísticas de Nielsen.</p></div></div>
+            </div>
+        </div>
+        <div class="process-group">
+            <div class="process-group-header">
+                <div class="process-group-icon pink"><i data-lucide="palette"></i></div>
+                <h4>UI — Do Sketch ao Projeto Final</h4>
+            </div>
+            <p class="process-group-sub">Materializando ideias em interfaces com propósito</p>
+            <div class="process-cards">
+                <div class="process-card"><div class="process-card-icon pink"><i data-lucide="pencil"></i></div><div><h5>Sketch e Exploração Visual</h5><p>Rascunhos manuais e moodboards para definir a direção estética, paleta de cores e tipografia alinhadas à identidade.</p></div></div>
+                <div class="process-card"><div class="process-card-icon pink"><i data-lucide="layout-grid"></i></div><div><h5>Wireframes de Alta Fidelidade</h5><p>Transformação dos fluxos validados em telas detalhadas com hierarquia visual, grid system e consistência de componentes.</p></div></div>
+                <div class="process-card"><div class="process-card-icon pink"><i data-lucide="layers"></i></div><div><h5>Design System e Componentes</h5><p>Criação de bibliotecas reutilizáveis no Figma com Auto Layout, variants e tokens que aceleram o desenvolvimento.</p></div></div>
+                <div class="process-card"><div class="process-card-icon pink"><i data-lucide="send"></i></div><div><h5>Handoff e Entrega Final</h5><p>Especificações detalhadas para devs, documentação dos componentes e acompanhamento da implementação para garantir fidelidade ao design.</p></div></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Trajetória -->
+<section id="journey" class="journey">
+    <div class="journey-container">
+        <span class="section-label">TRAJETÓRIA</span>
+        <h3>Minha <span class="highlight">Jornada</span></h3>
+        <p class="section-subtitle">Cada experiência foi um passo na construção de uma visão mais completa sobre design, pessoas e impacto.</p>
+        <div class="journey-grid">
+            <div>
+                <div class="journey-section-title"><i data-lucide="briefcase"></i> Experiência</div>
+                <div class="company-group">
+                    <div class="company-header"><div class="company-badge-new badge-purple">M</div><span class="company-name">Medilab Sistemas</span></div>
+                    <div class="role-item"><div class="role-content"><div class="role-title">Designer de Experiência do Usuário</div><div class="role-meta">Tempo integral · jun 2024 — o momento · 2 anos 1 mês</div><div class="role-desc">Crio experiências digitais intuitivas e esteticamente agradáveis. No aspecto UX, foco na estrutura e funcionalidade do produto, garantindo que a navegação seja fácil e eficiente.</div><div class="role-skills">Prototipagem, Experiência do usuário (UX) e mais 13 competências</div></div></div>
+                    <div class="role-item"><div class="role-content"><div class="role-title">Designer de Interface do Usuário</div><div class="role-meta">Estágio · fev 2024 — jun 2024 · 5 meses</div><div class="role-desc">Atuação em tempo integral na equipe responsável pelo Mediworks TI, principal solução da Medilab Sistemas, com foco em inovação e experiência do usuário.</div><div class="role-skills">Prototipagem, Adobe Photoshop e mais 10 competências</div></div></div>
+                </div>
+                <div class="company-group">
+                    <div class="company-header"><div class="company-badge-new badge-gray">G</div><span class="company-name">Gerente de Mídias Sociais</span></div>
+                    <div class="role-item"><div class="role-content"><div class="role-title">Gerente de Mídias Sociais</div><div class="role-meta">Loja de dropshipping · Tempo integral · jul 2023 — jul 2024 · 1 ano 1 mês · Rio de Janeiro, Brasil · Remoto</div><div class="role-desc">Responsável pelas estratégias de marketing, gerenciamento de mídias sociais de diversos clientes, trabalhando de forma direta com a identidade visual dos mesmos.</div><div class="role-skills">Adobe Photoshop, Canva e mais 2 competências</div></div></div>
+                </div>
+                <div class="company-group">
+                    <div class="company-header"><div class="company-badge-new badge-orange">R</div><span class="company-name">Rebento.cc</span></div>
+                    <div class="role-item"><div class="role-content"><div class="role-title">Designer Gráfico</div><div class="role-meta">Estágio · fev 2023 — jul 2023 · 6 meses · Rio de Janeiro, Brasil · Remoto</div><div class="role-desc">Responsável pelo brainstorm, criação e desenvolvimento das peças publicitárias que, além de Motion, tinham foco estático.</div><div class="role-skills">Adobe Photoshop, Adobe After Effects e mais 4 competências</div></div></div>
+                </div>
+                <div class="company-group">
+                    <div class="company-header"><div class="company-badge-new badge-violet">K</div><span class="company-name">Blank IT Consulting</span></div>
+                    <div class="role-item"><div class="role-content"><div class="role-title">Estrategista de Mídias Sociais</div><div class="role-meta">Estágio · jan 2023 — mar 2023 · 3 meses · No local</div><div class="role-desc">Criação de peças promocionais de forma interna e externa.</div><div class="role-skills">Adobe Photoshop, Adobe Illustrator e mais 1 competência</div></div></div>
+                </div>
+            </div>
+            <div>
+                <div class="journey-section-title"><i data-lucide="star"></i> Eventos</div>
+                <div class="event-card">
+                    <div class="event-badge-new">J</div>
+                    <div><h5>JPR 2026 — Jornada Paulista de Radiologia</h5><span class="year">2026</span><p>Participação no maior evento de radiologia da América Latina, acompanhando as tendências em diagnóstico por imagem. PACS à inovação em healthtech.</p></div>
+                </div>
+                <div class="journey-section-title"><i data-lucide="graduation-cap"></i> Formação Acadêmica</div>
+                <div class="edu-card"><div class="edu-badge blue">UVA</div><div><h5>Universidade Veiga de Almeida</h5><p>Motion Design, Graphic Design · fev 2021 — ago 2024</p></div></div>
+                <div class="edu-card"><div class="edu-badge teal">CNA</div><div><h5>CNA Idiomas — Unidade Belenzinho</h5><p>Inglês · Teaching English as a Second or Foreign Language</p></div></div>
+                <div class="journey-section-title"><i data-lucide="award"></i> Licenças e Certificados</div>
+                <div class="cert-card"><div class="cert-badge-new indigo">D</div><div><h5>UI/UX Specialization: From Research to Accessibility</h5><span class="issuer">Domestika</span><span class="period">Emitido em mai 2026 · Expira jun 2026</span><div class="cert-skills">Desenvolvimento de aplicativos móveis, Design digital e mais 5 competências</div></div></div>
+                <div class="cert-card"><div class="cert-badge-new cyan">C</div><div><h5>Crie campanhas em grande escala</h5><span class="issuer">Canva</span><span class="period">Emitido em abr 2026 · Expira mai 2026</span><div class="cert-skills">Branding, Marketing digital e mais 2 competências</div></div></div>
+                <div class="cert-card"><div class="cert-badge-new emerald">E</div><div><h5>Design de Aplicativos na Transformação Digital</h5><span class="issuer">Enap</span><span class="period">Emitido em jan 2026 · Expira jan 2026</span><div class="cert-skills">UX Research, Experiência do usuário (UX) e mais 5 competências</div></div></div>
+                <div class="cert-card"><div class="cert-badge-new amber">A</div><div><h5>Imersão IA 4ª edição</h5><span class="issuer">Alura</span><span class="period">Emitido em out 2025</span></div></div>
+                <div class="cert-card"><div class="cert-badge-new violet">R</div><div><h5>Discover</h5><span class="issuer">Rocketseat</span><span class="period">Emitido em mai 2025</span><div class="cert-skills">Figma (Software)</div></div></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Projetos -->
+<section id="projects" class="projects">
+    <div class="projects-container">
+        <span class="section-label">PROJETOS</span>
+        <h3>Estudos de <span class="highlight">Caso</span></h3>
+        <p class="section-subtitle">Cada projeto nasce de um desafio real de usabilidade, onde clareza, acessibilidade e performance fazem diferença na vida das pessoas.</p>
+        <div class="case-studies">
+            <div class="case-study"><span class="case-tag">HEALTHTECH</span><h4>Saudy — Sistema Clínico</h4><p class="case-description">Dashboard de gestão de consultas com prontuário eletrônico integrado, teleconsulta em tempo real, fila de pacientes dinâmica e agendamento inteligente. Foco em acessibilidade WCAG 2.2 e performance para ambientes hospitalares de alta demanda.</p><div class="case-tags"><span class="tag">UI Design</span><span class="tag">Dashboard</span><span class="tag">Teleconsulta</span><span class="tag">Acessibilidade</span></div></div>
+            <div class="case-study"><span class="case-tag edtech">EDTECH</span><h4>App Escolar — Gestão de Alunos</h4><p class="case-description">Aplicativo mobile completo para acompanhamento escolar: frequência em tempo real, ranking acadêmico, ficha médica digital, check-in de entrada e saída, e configurações de perfil familiar. Experiência otimizada para pais com baixa familiaridade digital.</p><div class="case-tags"><span class="tag">Mobile UI</span><span class="tag">Figma</span><span class="tag">Dark Mode</span><span class="tag">Ficha Médica</span></div></div>
+            <div class="case-study">
+                <span class="case-tag">HEALTHTECH</span>
+                <h4>MediWorks 11 — Design System</h4>
+                <div class="role-badge"><i data-lucide="user-check"></i> UI Lead · colaboração cross-funcional</div>
+                <p class="case-description">Participação ativa em todas as frentes do projeto: imersão no fluxo clínico junto às equipes de UX para entender os cenários de uso, alinhamento com desenvolvimento e stakeholders, e liderança completa da execução visual. O design system — dois temas (Dark e Padrão), tipografia calibrada para leitura prolongada e paleta técnica para radiologistas — foi concebido e entregue integralmente por mim.</p>
+                <div class="case-tags"><span class="tag">Design System</span><span class="tag">PACS</span><span class="tag">Dark Mode</span><span class="tag">Figma</span></div>
+            </div>
+            <div class="case-study"><span class="case-tag">HEALTHTECH</span><h4>MediClinic — Medilab Sistemas</h4><p class="case-description">Atuação em todo o processo do projeto MediClinic: desde sketch e layout até a entrega final em Delphi (desktop) e na versão web. Projeto focado em usabilidade clínica, fluxo de cadastro de pacientes e interface de gestão integrada.</p><div class="case-tags"><span class="tag">Delphi</span><span class="tag">Web</span><span class="tag">UX</span><span class="tag">Healthtech</span></div></div>
+        </div>
+    </div>
+</section>
+
+<!-- Contato -->
+<section id="contact" class="contact">
+    <div class="contact-container">
+        <h2>Vamos construir algo <strong>juntos</strong>?</h2>
+        <p>Aberta a oportunidades em healthtech, edtech e design systems.</p>
+        <button class="btn btn-primary btn-large">Entrar em contato</button>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-inner">
+        <span>© 2026 Lara Macedo — UI/UX Designer</span>
+        <div class="footer-links">
+            <a href="https://www.linkedin.com/in/lara-macedo-634433202" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            <span>•</span>
+            <span class="status-dot">STATUS: DISPONÍVEL</span>
+        </div>
+    </div>
+</footer>
+
+<script>
+/* ── Lucide ── */
+function initLucide() {
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+    else setTimeout(initLucide, 100);
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initLucide);
+else initLucide();
+
+/* ── Dark Mode ── */
+const themeToggle = document.getElementById('themeToggle');
+const html = document.documentElement;
+const saved = localStorage.getItem('theme');
+if (saved === 'dark') html.classList.add('dark-mode');
+else if (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches) html.classList.add('dark-mode');
+
+themeToggle.addEventListener('click', () => {
+    html.classList.toggle('dark-mode');
+    localStorage.setItem('theme', html.classList.contains('dark-mode') ? 'dark' : 'light');
+    initLucide();
+});
+
+/* ── Hero entrada suave ── */
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        document.getElementById('heroContent').classList.add('visible');
+    }, 80); // pequeno delay para garantir o paint inicial
+});
+
+/* ── Smooth scroll ── */
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+        const href = this.getAttribute('href');
+        if (href === '#') return;
+        e.preventDefault();
+        const target = document.querySelector(href);
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+});
+
+/* ── Active state: sidebar nav + hero dots ── */
+const navItems  = document.querySelectorAll('.nav-item');
+const heroDots  = document.querySelectorAll('.hero-dot');
+const sections  = Array.from(document.querySelectorAll('section[id]'));
+
+function updateActive() {
+    const scrollY  = window.pageYOffset;
+    const winH     = window.innerHeight;
+    let current    = sections[0].id;
+
+    sections.forEach(sec => {
+        // considera ativa a seção cujo topo já passou de 40% da viewport
+        if (sec.offsetTop <= scrollY + winH * 0.4) current = sec.id;
+    });
+
+    navItems.forEach(el => el.classList.toggle('active', el.dataset.section === current));
+    heroDots.forEach(el => el.classList.toggle('active', el.dataset.section === current));
+}
+
+window.addEventListener('scroll', updateActive, { passive: true });
+updateActive();
+
+/* ── Animações de entrada (scroll) ── */
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+            observer.unobserve(entry.target);
+        }
+    });
+}, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+
+document.querySelectorAll('.skill-card, .case-study, .process-card, .cert-card, .company-group').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(18px)';
+    el.style.transition = 'opacity 0.55s ease, transform 0.55s ease';
+    observer.observe(el);
+});
+
+/* ── Re-init icons on theme change ── */
+new MutationObserver(() => {
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}).observe(html, { attributes: true, attributeFilter: ['class'] });
+</script>
+</body>
+</html>
